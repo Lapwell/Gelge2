@@ -33,7 +33,7 @@ star_count = 32
 #Set pygame events
 STAR_EVENT = 25
 SHOOT_EVENT = 26
-pygame.time.set_timer(STAR_EVENT, 1000)
+pygame.time.set_timer(STAR_EVENT, 964)
 pygame.time.set_timer(SHOOT_EVENT, 2500)
 
 i = 0
