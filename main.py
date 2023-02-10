@@ -9,6 +9,7 @@ pygame.init()
 #Colours
 BLACK = 0, 0, 0
 WHITE = 255, 255, 255
+GREEN = 0, 255, 0
 
 #Load music
 bg_music = pygame.mixer.music.load('assets/sounds/ToeJammer.mp3')
@@ -19,27 +20,40 @@ WIDTH, HEIGHT = 800, 800
 ROOT = pygame.display.set_mode((WIDTH, HEIGHT))
 FONT = pygame.font.Font(None, 24)
 FPS = 30
-VEL = 4
+VEL = 8
+BULLET_VEL = 8
 P_SHIP = 80
 E_SHIP = 60
-p_shots = 0
 clock = pygame.time.Clock()
 dt = clock.tick(FPS)
 
+#Pygame sprite stuff
 star_array = []
 star_num = randrange(16, 32)
 star_count = 32
+bullet_size = 8, 24
+p_bullet_list = []
 
 #Set pygame events
 STAR_EVENT = 25
 SHOOT_EVENT = 26
-pygame.time.set_timer(STAR_EVENT, 964)
+pygame.time.set_timer(STAR_EVENT, 971)
 pygame.time.set_timer(SHOOT_EVENT, 2500)
 
 i = 0
 while i < star_count:
     star_array.append(bg.star(ROOT, randrange(0, WIDTH), randrange(0, HEIGHT)))
     i += 1
+
+
+class bullet():
+    def __init__(self, x, y, vel):
+        self.object = pygame.Rect((x, y), bullet_size)
+        self.vel = vel
+    def move(self):
+        if self.object.y < -bullet_size[1]:
+            p_bullet_list.remove(self)
+        self.object.y -= self.vel
 
 
 class PlayerClass():
@@ -55,6 +69,8 @@ class PlayerClass():
         self.rect.center = (WIDTH / 2, HEIGHT - P_SHIP)
     def move_player(self, VEL):
         self.rect.x -= VEL
+    def shoot(self, vel):
+        p_bullet_list.append(bullet(self.rect.x + P_SHIP / 2 - 4, self.rect.y, vel))
 
 
 class Enemy1Class():
@@ -76,7 +92,6 @@ def fps_counter():
 
 def custom_events():
     if pygame.event.get(STAR_EVENT):
-        print('hello')
         for item in star_array:
             item.value += 1
 
@@ -84,12 +99,16 @@ def draw_root(player_obj, enemy1_obj):
     ROOT.fill(BLACK)
     for item in star_array:
         item.animation()
+    for item in p_bullet_list:
+        pygame.draw.rect(ROOT, GREEN, item.object)
+        item.move()
     ROOT.blit(player_obj.sprite, player_obj.rect)
     ROOT.blit(enemy1_obj.sprite, enemy1_obj.rect)
+    fps_counter()
     pygame.display.update()
 
 def check_events(player_obj):
-    global p_shots
+    global bullet_count
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and player_obj.rect.x > 0:
         player_obj.move_player(VEL)
@@ -99,10 +118,10 @@ def check_events(player_obj):
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.KEYUP:
-            if keys[pygame.K_SPACE] and p_shots < 2:
-                print('pew')
-                p_shots += 1
+        if event.type == pygame.KEYDOWN:
+            if keys[pygame.K_SPACE] and len(p_bullet_list) < 2:
+                print('pew pew')
+                player_obj.shoot(20)
 
 
 def main():
