@@ -1,6 +1,6 @@
+from random import randrange
 import pygame
 import sys
-from random import randrange
 import time
 import background as bg
 
@@ -12,15 +12,15 @@ WHITE = 255, 255, 255
 GREEN = 0, 255, 0
 
 #Load music
-bg_music = pygame.mixer.music.load('assets/sounds/ToeJammer.mp3')
+bg_music = pygame.mixer.music.load('assets/sounds/SpaceBopper.mp3') #Music made by my lil bro Charles :)
 
 #Where pygame is setup
 pygame.display.set_caption('Gelge 2')
-WIDTH, HEIGHT = 800, 800
+WIDTH, HEIGHT = 800, 1200
 ROOT = pygame.display.set_mode((WIDTH, HEIGHT))
 FONT = pygame.font.Font(None, 24)
-FPS = 30
-VEL = 8
+FPS = 60
+VEL = 4
 BULLET_VEL = 8
 P_SHIP = 80
 E_SHIP = 60
@@ -57,15 +57,11 @@ class bullet():
 
 
 class PlayerClass():
-    def __init__(self, x, y, lives):
+    def __init__(self, lives):
         img = pygame.image.load('assets/images/player_ship.png').convert_alpha()
-        sprite = pygame.transform.scale(img, (P_SHIP, P_SHIP))
-        sprite_rect = sprite.get_rect()
-        self.x = x
-        self.y = y
         self.lives = lives
-        self.sprite = sprite
-        self.rect = sprite_rect
+        self.sprite = pygame.transform.scale(img, (P_SHIP, P_SHIP))
+        self.rect = self.sprite.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT - P_SHIP)
     def move_player(self, VEL):
         self.rect.x -= VEL
@@ -74,15 +70,17 @@ class PlayerClass():
 
 
 class Enemy1Class():
-    def __init__(self, x, y, speed):
+    def __init__(self, speed, lives):
         img = pygame.image.load('assets/images/enemy1.png').convert_alpha()
-        sprite = pygame.transform.scale(img, (E_SHIP, E_SHIP))
-        sprite_rect = sprite.get_rect()
-        self.x = x
-        self.y = y
         self.speed = speed
-        self.sprite = sprite
-        self.rect = sprite_rect
+        self.sprite = pygame.transform.scale(img, (E_SHIP, E_SHIP))
+        self.rect = self.sprite.get_rect()
+
+
+class Enemy2Class():
+    def __init__(self, speed, lives):
+        self.speed = speed
+        self.lives = lives
 
 
 def fps_counter():
@@ -121,15 +119,16 @@ def check_events(player_obj):
         if event.type == pygame.KEYDOWN:
             if keys[pygame.K_SPACE] and len(p_bullet_list) < 2:
                 print('pew pew')
-                player_obj.shoot(20)
+                player_obj.shoot(16)
 
 
 def main():
     run = True
     pygame.mixer.music.set_volume(1.0)
     pygame.mixer.music.play(loops= -1, start=0.0, fade_ms=8000)
-    player_object = PlayerClass(100, 100, 3)
-    enemy1_obj = Enemy1Class(100, 20, 10)
+    player_object = PlayerClass(3)
+    enemy1_obj = Enemy1Class(16, 1)
+    enemy2_obj = Enemy2Class(16, 2)
     while run:
         custom_events()  #For some reason, checking for custom events can not be immediatly before or after clock.tick()... not sure why
         draw_root(player_object, enemy1_obj)
