@@ -46,7 +46,7 @@ while i < star_count:
     i += 1
 
 
-class bullet():
+class Bullet():
     def __init__(self, x, y, vel):
         self.object = pygame.Rect((x, y), bullet_size)
         self.vel = vel
@@ -66,7 +66,7 @@ class PlayerClass():
     def move_player(self, VEL):
         self.rect.x -= VEL
     def shoot(self, vel):
-        p_bullet_list.append(bullet(self.rect.x + P_SHIP / 2 - 4, self.rect.y, vel))
+        p_bullet_list.append(Bullet(self.rect.x + P_SHIP / 2 - 4, self.rect.y, vel))
 
 
 class Enemy1Class():
